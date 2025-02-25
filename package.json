@@ -11,5 +11,8 @@
   "description": "",
   "dependencies": {
     "selenium-webdriver": "^4.29.0"
+  },
+  "devDependencies": {
+    "mocha": "^11.1.0"
   }
 }
