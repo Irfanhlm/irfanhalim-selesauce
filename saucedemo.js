@@ -2,26 +2,33 @@ const { Builder, By, Key, until } = require('selenium-webdriver');
 const assert = require('assert');
 const chrome = require('selenium-webdriver/chrome');
 const firefox = require('selenium-webdriver/firefox');
-// const safari = require('selenium-webdriver/safari');
 
 describe('SAUCEDEMO AUTOMATE TESTING WITH SELENIUM-MOCHA', function () {
     const listBrowser = [
         {
             name: "chrome",
             options: new chrome.Options().addArguments("--headless"),
+            displayName: "Chrome"
         },
         {
             name: "firefox",
             options: new firefox.Options().addArguments("--headless"),
+            displayName: "Firefox"
         },
-        // {
-        //     name: "safari",
-        //     options: new safari.Options(), // Safari tidak mendukung mode headless
-        // },
+        {
+            name: "chrome",
+            options: new chrome.Options()
+                .addArguments("--headless")
+                .addArguments("--disable-gpu")
+                .addArguments("--no-sandbox")
+                .addArguments("--disable-dev-shm-usage")
+                .setBinaryPath("/Applications/Brave Browser.app/Contents/MacOS/Brave Browser"),
+            displayName: "Brave"
+        },
     ];
 
     for (const browser of listBrowser) {
-        describe(`Testing with ${browser.name}`, function () {
+        describe(`Testing with ${browser.displayName}`, function () {
             let driver;
             let sessionId;
 
@@ -29,9 +36,12 @@ describe('SAUCEDEMO AUTOMATE TESTING WITH SELENIUM-MOCHA', function () {
                 this.timeout(30000);
                 driver = await new Builder()
                     .forBrowser(browser.name)
-                    .setChromeOptions(browser.name === "chrome" ? browser.options : undefined)
+                    .setChromeOptions(
+                        (browser.name === "chrome" || browser.name === "brave") 
+                        ? browser.options 
+                        : undefined
+                    )
                     .setFirefoxOptions(browser.name === "firefox" ? browser.options : undefined)
-                    // .setSafariOptions(browser.name === "safari" ? browser.options : undefined)
                     .build();
 
                 await driver.get('https://www.saucedemo.com');
@@ -54,14 +64,14 @@ describe('SAUCEDEMO AUTOMATE TESTING WITH SELENIUM-MOCHA', function () {
 
                 const session = await driver.getSession();
                 sessionId = session.getId();
-                console.log(`Session ID for ${browser.name}: `, sessionId);
+                console.log(`Session ID for ${browser.displayName}: `, sessionId);
             });
 
             after(async function () {
-                console.log(`Testing Success! with browser: ${browser.name}`);
                 if (driver) {
                     await driver.quit();
                 }
+                console.log(`Testing Success! with browser: ${browser.displayName}`);
             });
 
             it('User Success Login', async function () {
