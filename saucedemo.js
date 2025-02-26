@@ -71,7 +71,7 @@ describe('SAUCEDEMO AUTOMATE TESTING WITH SELENIUM-MOCHA', function () {
                 if (driver) {
                     await driver.quit();
                 }
-                console.log(`Testing Success! with browser: ${browser.displayName}`);
+                console.log(`Testing Success! with browser: ${browser.displayName}\n\n`);
             });
 
             it('User Success Login', async function () {
