@@ -1,9 +1,11 @@
-const { Builder, By } = require('selenium-webdriver');
+const { Builder } = require('selenium-webdriver');
 const assert = require('assert');
 
 const LoginPage = require('../pages/loginPage');
 const InventoryPage = require('../pages/inventoryPage');
 const CartPage = require('../pages/cartPage');
+const CheckoutInfoPage = require('../pages/checkoutInfoPage');
+
 const chrome = require('selenium-webdriver/chrome');
 // const firefox = require('selenium-webdriver/firefox');
 
@@ -43,6 +45,7 @@ async function cartTest() {
                 let loginPage;
                 let inventoryPage;
                 let cartPage;
+                let checkoutInfoPage;
                 // let testCaseName;
 
                 // Membuat direktori screenshots jika belum ada
@@ -65,6 +68,7 @@ async function cartTest() {
                     loginPage = new LoginPage(driver);
                     inventoryPage = new InventoryPage(driver);
                     cartPage = new CartPage(driver);
+                    checkoutInfoPage = new CheckoutInfoPage(driver);
 
                     await loginPage.open('https://www.saucedemo.com');
                     // Tunggu sampai halaman login siap
@@ -122,7 +126,7 @@ async function cartTest() {
 
                 it('Checkout Product Item', async function () {
                     await cartPage.clickCheckoutButton();
-                    const checkoutInfo = await cartPage.getCheckoutInfo();
+                    const checkoutInfo = await checkoutInfoPage.getCheckoutInfo();
 
                     assert.strictEqual(
                         checkoutInfo.includes('Checkout: Your Information'),
@@ -132,23 +136,16 @@ async function cartTest() {
                 });
 
                 it('Fill Checkout: Your Information', async function () {
-                    let firstName = await driver.findElement(By.id('first-name'));
-                    let lastName = await driver.findElement(By.id('last-name'));
-                    let zip = await driver.findElement(By.id('postal-code'));
-                    let continueButton = await driver.findElement(By.id('continue'));
+                    await checkoutInfoPage.fillCheckoutInfo("irfan", "halim", 12345);
+                    const checkoutOverview = await checkoutInfoPage.getTitleText();
 
-                    await firstName.sendKeys('Irfan');
-                    await lastName.sendKeys('Halim');
-                    await zip.sendKeys('12345');
-                    await continueButton.click();
-
-                    let checkoutOverview = await driver.findElement(By.css('.title')).getText();
                     assert.strictEqual(
                         checkoutOverview.includes('Checkout: Overview'),
                         true,
                         'Checkout Overview not Exists'
                     );
                 });
+
             });
         }
     });

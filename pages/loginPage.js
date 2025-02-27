@@ -1,5 +1,5 @@
 const { By, until } = require("selenium-webdriver");
-const assert = require("assert");
+
 
 class LoginPage {
     constructor(driver) {
