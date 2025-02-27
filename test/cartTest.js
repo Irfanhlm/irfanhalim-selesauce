@@ -1,8 +1,9 @@
 const { Builder, By } = require('selenium-webdriver');
 const assert = require('assert');
 
-const LoginPage = require('./pages/loginPage');
-const InventoryPage = require('./pages/inventoryPage');
+const LoginPage = require('../pages/loginPage');
+const InventoryPage = require('../pages/inventoryPage');
+const CartPage = require('../pages/cartPage');
 const chrome = require('selenium-webdriver/chrome');
 // const firefox = require('selenium-webdriver/firefox');
 
@@ -10,8 +11,8 @@ const chrome = require('selenium-webdriver/chrome');
 // const path = require('path');
 
 
-async function saucedemoTest() {
-    describe('SAUCEDEMO AUTOMATE TESTING WITH SELENIUM-MOCHA', function () {
+async function cartTest() {
+    describe('Add Item to Cart Test Case', function () {
         const listBrowser = [
             {
                 name: "chrome",
@@ -41,10 +42,11 @@ async function saucedemoTest() {
                 let sessionId;
                 let loginPage;
                 let inventoryPage;
+                let cartPage;
                 // let testCaseName;
 
                 // Membuat direktori screenshots jika belum ada
-                // const screenshotDir = path.join(__dirname, './screenshots');
+                // const screenshotDir = path.join(__dirname, '../screenshots');
                 // if (!fs.existsSync(screenshotDir)) {
                 //     fs.mkdirSync(screenshotDir);
                 // }
@@ -62,6 +64,7 @@ async function saucedemoTest() {
                         .build();
                     loginPage = new LoginPage(driver);
                     inventoryPage = new InventoryPage(driver);
+                    cartPage = new CartPage(driver);
 
                     await loginPage.open('https://www.saucedemo.com');
                     // Tunggu sampai halaman login siap
@@ -72,9 +75,11 @@ async function saucedemoTest() {
                     await inventoryPage.waitingAppLogo();
                     await inventoryPage.waitingUrl();
                     // Mendapatkan session ID sekarang
-                    const session = await driver.getSession();
-                    sessionId = session.getId();
-                    console.log(`Session ID for ${browser.displayName}: `, sessionId);
+                    // const session = await driver.getSession();
+                    // sessionId = session.getId();
+                    // console.log(`Session ID for ${browser.displayName}: `, sessionId);
+
+                    await inventoryPage.clickAddItem();
                 });
 
                 // beforeEach(function () {
@@ -101,60 +106,13 @@ async function saucedemoTest() {
                     if (driver) {
                         await driver.quit();
                     }
-                    console.log(`Testing Success! with browser: ${browser.displayName}\n\n`);
-                });
-
-                it('User Success Login', async function () {
-                    let titleText = await driver.findElement(By.xpath("//div[@class='app_logo']")).getText();
-                    assert.strictEqual(
-                        titleText.includes('Swag Labs'),
-                        true,
-                        'Swag Labs is not contain on page'
-                    );
-                });
-
-                it('Validation User After Login', async function () {
-                    let currentUrl = await driver.getCurrentUrl();
-                    assert.strictEqual(
-                        currentUrl.includes('https://www.saucedemo.com/inventory.html'),
-                        true,
-                        'URL does not match, user is not on the dashboard page.'
-                    );
-                });
-
-                it('Add Item to Cart', async function () {
-                    let buttonAddItem = await driver.findElement(By.id("add-to-cart-sauce-labs-backpack"));
-                    await buttonAddItem.click();
-                });
-
-                it('Validation Item Success Added to Cart', async function () {
-                    let buttonRemoveEnabled = await driver.findElement(By.id("remove-sauce-labs-backpack")).getText();
-                    assert.strictEqual(
-                        buttonRemoveEnabled.includes('Remove'),
-                        true,
-                        'Button Remove not Exists'
-                    );
-
-                    let buttonRemove = await driver.findElement(By.id("remove-sauce-labs-backpack")).isEnabled();
-                    assert.strictEqual(
-                        buttonRemove,
-                        true,
-                        'Button Remove is not Enabled'
-                    );
-
-                    let shoppingCart = await driver.findElement(By.css(".shopping_cart_badge")).isDisplayed();
-                    assert.strictEqual(
-                        shoppingCart,
-                        true,
-                        'Shopping Cart is not displayed'
-                    );
+                    console.log(`Add Item to Cart Testing Success! with browser: ${browser.displayName}\n`);
                 });
 
                 it('Go to Cart Page', async function () {
-                    let buttonCart = await driver.findElement(By.css(".shopping_cart_link"));
-                    await buttonCart.click();
+                    await inventoryPage.clickCartButton();
+                    const labelDescription = await cartPage.getLabelDescription();
 
-                    let labelDescription = await driver.findElement(By.css(".cart_desc_label")).getText();
                     assert.strictEqual(
                         labelDescription.includes('Description'),
                         true,
@@ -163,10 +121,9 @@ async function saucedemoTest() {
                 });
 
                 it('Checkout Product Item', async function () {
-                    let buttonCheckout = await driver.findElement(By.id("checkout"));
-                    await buttonCheckout.click();
+                    await cartPage.clickCheckoutButton();
+                    const checkoutInfo = await cartPage.getCheckoutInfo();
 
-                    let checkoutInfo = await driver.findElement(By.css(".title")).getText();
                     assert.strictEqual(
                         checkoutInfo.includes('Checkout: Your Information'),
                         true,
@@ -198,4 +155,4 @@ async function saucedemoTest() {
 
 }
 
-saucedemoTest();
+cartTest();

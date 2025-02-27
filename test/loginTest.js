@@ -1,17 +1,17 @@
 const { Builder, By } = require('selenium-webdriver');
 const assert = require('assert');
 
-const LoginPage = require('./pages/loginPage');
-const InventoryPage = require('./pages/inventoryPage');
+const LoginPage = require('../pages/loginPage');
+const InventoryPage = require('../pages/inventoryPage');
+
 const chrome = require('selenium-webdriver/chrome');
 // const firefox = require('selenium-webdriver/firefox');
 
 // const fs = require('fs');
 // const path = require('path');
 
-
-async function saucedemoTest() {
-    describe('SAUCEDEMO AUTOMATE TESTING WITH SELENIUM-MOCHA', function () {
+async function loginTest() {
+    describe('LOGIN Page Test Case', function () {
         const listBrowser = [
             {
                 name: "chrome",
@@ -44,7 +44,7 @@ async function saucedemoTest() {
                 // let testCaseName;
 
                 // Membuat direktori screenshots jika belum ada
-                // const screenshotDir = path.join(__dirname, './screenshots');
+                // const screenshotDir = path.join(__dirname, '../screenshots');
                 // if (!fs.existsSync(screenshotDir)) {
                 //     fs.mkdirSync(screenshotDir);
                 // }
@@ -72,9 +72,9 @@ async function saucedemoTest() {
                     await inventoryPage.waitingAppLogo();
                     await inventoryPage.waitingUrl();
                     // Mendapatkan session ID sekarang
-                    const session = await driver.getSession();
-                    sessionId = session.getId();
-                    console.log(`Session ID for ${browser.displayName}: `, sessionId);
+                    // const session = await driver.getSession();
+                    // sessionId = session.getId();
+                    // console.log(`Session ID for ${browser.displayName}: `, sessionId);
                 });
 
                 // beforeEach(function () {
@@ -101,11 +101,12 @@ async function saucedemoTest() {
                     if (driver) {
                         await driver.quit();
                     }
-                    console.log(`Testing Success! with browser: ${browser.displayName}\n\n`);
+                    console.log(`Login Testing Success! with browser: ${browser.displayName}\n`);
                 });
 
                 it('User Success Login', async function () {
-                    let titleText = await driver.findElement(By.xpath("//div[@class='app_logo']")).getText();
+                    const titleText = await inventoryPage.getTitleText();
+
                     assert.strictEqual(
                         titleText.includes('Swag Labs'),
                         true,
@@ -115,87 +116,18 @@ async function saucedemoTest() {
 
                 it('Validation User After Login', async function () {
                     let currentUrl = await driver.getCurrentUrl();
+                    
                     assert.strictEqual(
                         currentUrl.includes('https://www.saucedemo.com/inventory.html'),
                         true,
                         'URL does not match, user is not on the dashboard page.'
                     );
                 });
-
-                it('Add Item to Cart', async function () {
-                    let buttonAddItem = await driver.findElement(By.id("add-to-cart-sauce-labs-backpack"));
-                    await buttonAddItem.click();
-                });
-
-                it('Validation Item Success Added to Cart', async function () {
-                    let buttonRemoveEnabled = await driver.findElement(By.id("remove-sauce-labs-backpack")).getText();
-                    assert.strictEqual(
-                        buttonRemoveEnabled.includes('Remove'),
-                        true,
-                        'Button Remove not Exists'
-                    );
-
-                    let buttonRemove = await driver.findElement(By.id("remove-sauce-labs-backpack")).isEnabled();
-                    assert.strictEqual(
-                        buttonRemove,
-                        true,
-                        'Button Remove is not Enabled'
-                    );
-
-                    let shoppingCart = await driver.findElement(By.css(".shopping_cart_badge")).isDisplayed();
-                    assert.strictEqual(
-                        shoppingCart,
-                        true,
-                        'Shopping Cart is not displayed'
-                    );
-                });
-
-                it('Go to Cart Page', async function () {
-                    let buttonCart = await driver.findElement(By.css(".shopping_cart_link"));
-                    await buttonCart.click();
-
-                    let labelDescription = await driver.findElement(By.css(".cart_desc_label")).getText();
-                    assert.strictEqual(
-                        labelDescription.includes('Description'),
-                        true,
-                        'Label Description not Exists'
-                    );
-                });
-
-                it('Checkout Product Item', async function () {
-                    let buttonCheckout = await driver.findElement(By.id("checkout"));
-                    await buttonCheckout.click();
-
-                    let checkoutInfo = await driver.findElement(By.css(".title")).getText();
-                    assert.strictEqual(
-                        checkoutInfo.includes('Checkout: Your Information'),
-                        true,
-                        'Checkout Info not Exists'
-                    );
-                });
-
-                it('Fill Checkout: Your Information', async function () {
-                    let firstName = await driver.findElement(By.id('first-name'));
-                    let lastName = await driver.findElement(By.id('last-name'));
-                    let zip = await driver.findElement(By.id('postal-code'));
-                    let continueButton = await driver.findElement(By.id('continue'));
-
-                    await firstName.sendKeys('Irfan');
-                    await lastName.sendKeys('Halim');
-                    await zip.sendKeys('12345');
-                    await continueButton.click();
-
-                    let checkoutOverview = await driver.findElement(By.css('.title')).getText();
-                    assert.strictEqual(
-                        checkoutOverview.includes('Checkout: Overview'),
-                        true,
-                        'Checkout Overview not Exists'
-                    );
-                });
+                
             });
         }
     });
 
 }
 
-saucedemoTest();
+loginTest();

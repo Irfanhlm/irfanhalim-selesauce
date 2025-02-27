@@ -8,7 +8,6 @@ class LoginPage {
         this.passwordInput = By.id("password");
         this.loginButton = By.id("login-button");
         this.fieldUsename = until.elementLocated(By.id('user-name'));
-
     }
 
     async open(url) {
