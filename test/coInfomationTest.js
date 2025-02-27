@@ -5,6 +5,7 @@ const LoginPage = require('../pages/loginPage');
 const InventoryPage = require('../pages/inventoryPage');
 const CartPage = require('../pages/cartPage');
 const CheckoutInfoPage = require('../pages/coInfoPage');
+const CheckoutOverviewPage = require('../pages/coOverviewPage');
 
 const chrome = require('selenium-webdriver/chrome');
 // const firefox = require('selenium-webdriver/firefox');
@@ -13,8 +14,8 @@ const chrome = require('selenium-webdriver/chrome');
 // const path = require('path');
 
 
-async function cartTest() {
-    describe('Add Item to CART Test Case', function () {
+async function coInformationTest() {
+    describe('Checkout INFORMATION Page Test Case', function () {
         const listBrowser = [
             {
                 name: "chrome",
@@ -46,6 +47,7 @@ async function cartTest() {
                 let inventoryPage;
                 let cartPage;
                 let checkoutInfoPage;
+                let checkoutOverviewPage;
                 // let testCaseName;
 
                 // Membuat direktori screenshots jika belum ada
@@ -69,6 +71,7 @@ async function cartTest() {
                     inventoryPage = new InventoryPage(driver);
                     cartPage = new CartPage(driver);
                     checkoutInfoPage = new CheckoutInfoPage(driver);
+                    checkoutOverviewPage = new CheckoutOverviewPage(driver);
 
                     await loginPage.open('https://www.saucedemo.com');
                     // Tunggu sampai halaman login siap
@@ -83,7 +86,12 @@ async function cartTest() {
                     // sessionId = session.getId();
                     // console.log(`Session ID for ${browser.displayName}: `, sessionId);
 
+                    //click button add item
                     await inventoryPage.clickAddItem();
+                    //click button cart to cart page
+                    await inventoryPage.clickCartButton();
+                    //click button checkout to checkout information
+                    await cartPage.clickCheckoutButton();
                 });
 
                 // beforeEach(function () {
@@ -113,35 +121,18 @@ async function cartTest() {
                     console.log(`Add Item to Cart Testing Success! with browser: ${browser.displayName}\n`);
                 });
 
-                it('Go to Cart Page', async function () {
-                    await inventoryPage.clickCartButton();
-                    const labelDescription = await cartPage.getLabelDescription();
+
+
+                it('Fill Checkout: Your Information', async function () {
+                    await checkoutInfoPage.fillCheckoutInfo("irfan", "halim", 12345);
+                    const checkoutOverview = await checkoutOverviewPage.getTitleText();
 
                     assert.strictEqual(
-                        labelDescription.includes('Description'),
+                        checkoutOverview.includes('Checkout: Overview'),
                         true,
-                        'Label Description not Exists'
+                        'Checkout Overview not Exists'
                     );
                 });
-
-                it('Checkout Product Item', async function () {
-                    await cartPage.clickCheckoutButton();
-                    const checkoutInfo = await checkoutInfoPage.getCheckoutInfo();
-
-                    assert.strictEqual(
-                        checkoutInfo.includes('Checkout: Your Information'),
-                        true,
-                        'Checkout Info not Exists'
-                    );
-                });
-
-
-
-                
-
-
-                
-                
 
             });
         }
@@ -149,4 +140,4 @@ async function cartTest() {
 
 }
 
-cartTest();
+coInformationTest();

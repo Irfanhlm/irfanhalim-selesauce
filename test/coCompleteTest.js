@@ -5,6 +5,8 @@ const LoginPage = require('../pages/loginPage');
 const InventoryPage = require('../pages/inventoryPage');
 const CartPage = require('../pages/cartPage');
 const CheckoutInfoPage = require('../pages/coInfoPage');
+const CheckoutOverviewPage = require('../pages/coOverviewPage');
+const CheckoutCompletePage = require('../pages/coCompletePage');
 
 const chrome = require('selenium-webdriver/chrome');
 // const firefox = require('selenium-webdriver/firefox');
@@ -13,8 +15,8 @@ const chrome = require('selenium-webdriver/chrome');
 // const path = require('path');
 
 
-async function cartTest() {
-    describe('Add Item to CART Test Case', function () {
+async function coCompleteTest() {
+    describe('Checkout COMPLETE Page Test Case', function () {
         const listBrowser = [
             {
                 name: "chrome",
@@ -46,6 +48,9 @@ async function cartTest() {
                 let inventoryPage;
                 let cartPage;
                 let checkoutInfoPage;
+                let checkoutOverviewPage;
+                let checkoutCompletePage;
+
                 // let testCaseName;
 
                 // Membuat direktori screenshots jika belum ada
@@ -69,6 +74,8 @@ async function cartTest() {
                     inventoryPage = new InventoryPage(driver);
                     cartPage = new CartPage(driver);
                     checkoutInfoPage = new CheckoutInfoPage(driver);
+                    checkoutOverviewPage = new CheckoutOverviewPage(driver);
+                    checkoutCompletePage = new CheckoutCompletePage(driver);
 
                     await loginPage.open('https://www.saucedemo.com');
                     // Tunggu sampai halaman login siap
@@ -83,7 +90,16 @@ async function cartTest() {
                     // sessionId = session.getId();
                     // console.log(`Session ID for ${browser.displayName}: `, sessionId);
 
+                    //click button add item
                     await inventoryPage.clickAddItem();
+                    //click button cart to cart page
+                    await inventoryPage.clickCartButton();
+                    //click button checkout to checkout information
+                    await cartPage.clickCheckoutButton();
+                    //fill form checkout information
+                    await checkoutInfoPage.fillCheckoutInfo("irfan", "halim", 12345);
+                    //click button finish checkout
+                    await checkoutOverviewPage.clickFinishButton();
                 });
 
                 // beforeEach(function () {
@@ -113,34 +129,48 @@ async function cartTest() {
                     console.log(`Add Item to Cart Testing Success! with browser: ${browser.displayName}\n`);
                 });
 
-                it('Go to Cart Page', async function () {
-                    await inventoryPage.clickCartButton();
-                    const labelDescription = await cartPage.getLabelDescription();
+
+
+                it('Checkout: Complete!', async function () {
+                    const iconComplete = await checkoutCompletePage.getIconComplete();
+                    const checkoutCompletedTitle = await checkoutCompletePage.getHeaderComplete();
+                    const checkoutCompletedMessage = await checkoutCompletePage.getTextComplete();
+                    const buttonBackhomeEnabled = await checkoutCompletePage.backHomeButtonEnabled();
 
                     assert.strictEqual(
-                        labelDescription.includes('Description'),
+                        iconComplete,
                         true,
-                        'Label Description not Exists'
+                        'Icon Complete not Exists'
+                    );
+                    assert.strictEqual(
+                        checkoutCompletedTitle.includes('Thank you for your order!'),
+                        true,
+                        'Checkout Complete Title not Exists'
+                    );
+                    assert.strictEqual(
+                        checkoutCompletedMessage.includes('Your order has been dispatched, and will arrive just as fast as the pony can get there!'),
+                        true,
+                        'Checkout Complete Message not Exists'
+                    );
+                    assert.strictEqual(
+                        buttonBackhomeEnabled,
+                        true,
+                        'Back to Home Button not Enabled'
                     );
                 });
 
-                it('Checkout Product Item', async function () {
-                    await cartPage.clickCheckoutButton();
-                    const checkoutInfo = await checkoutInfoPage.getCheckoutInfo();
+                it('Back to Home Page/Inventory Page', async function () {
+                    await checkoutCompletePage.clickBackHomeButton();
+                    const titleText = await inventoryPage.getTitleText();
 
                     assert.strictEqual(
-                        checkoutInfo.includes('Checkout: Your Information'),
+                        titleText.includes('Swag Labs'),
                         true,
-                        'Checkout Info not Exists'
+                        'Swag Labs is not contain on page'
                     );
+
                 });
 
-
-
-                
-
-
-                
                 
 
             });
@@ -149,4 +179,4 @@ async function cartTest() {
 
 }
 
-cartTest();
+coCompleteTest();

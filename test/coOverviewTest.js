@@ -5,6 +5,8 @@ const LoginPage = require('../pages/loginPage');
 const InventoryPage = require('../pages/inventoryPage');
 const CartPage = require('../pages/cartPage');
 const CheckoutInfoPage = require('../pages/coInfoPage');
+const CheckoutOverviewPage = require('../pages/coOverviewPage');
+const CheckoutCompletePage = require('../pages/coCompletePage');
 
 const chrome = require('selenium-webdriver/chrome');
 // const firefox = require('selenium-webdriver/firefox');
@@ -13,8 +15,8 @@ const chrome = require('selenium-webdriver/chrome');
 // const path = require('path');
 
 
-async function cartTest() {
-    describe('Add Item to CART Test Case', function () {
+async function coOverviewTest() {
+    describe('Checkout OVERVIEW Page Test Case', function () {
         const listBrowser = [
             {
                 name: "chrome",
@@ -46,6 +48,8 @@ async function cartTest() {
                 let inventoryPage;
                 let cartPage;
                 let checkoutInfoPage;
+                let checkoutOverviewPage;
+                let checkoutCompletePage;
                 // let testCaseName;
 
                 // Membuat direktori screenshots jika belum ada
@@ -69,6 +73,8 @@ async function cartTest() {
                     inventoryPage = new InventoryPage(driver);
                     cartPage = new CartPage(driver);
                     checkoutInfoPage = new CheckoutInfoPage(driver);
+                    checkoutOverviewPage = new CheckoutOverviewPage(driver);
+                    checkoutCompletePage = new CheckoutCompletePage(driver);
 
                     await loginPage.open('https://www.saucedemo.com');
                     // Tunggu sampai halaman login siap
@@ -83,7 +89,14 @@ async function cartTest() {
                     // sessionId = session.getId();
                     // console.log(`Session ID for ${browser.displayName}: `, sessionId);
 
+                    //click button add item
                     await inventoryPage.clickAddItem();
+                    //click button cart to cart page
+                    await inventoryPage.clickCartButton();
+                    //click button checkout to checkout information
+                    await cartPage.clickCheckoutButton();
+                    //fill form checkout information
+                    await checkoutInfoPage.fillCheckoutInfo("irfan", "halim", 12345);
                 });
 
                 // beforeEach(function () {
@@ -113,35 +126,41 @@ async function cartTest() {
                     console.log(`Add Item to Cart Testing Success! with browser: ${browser.displayName}\n`);
                 });
 
-                it('Go to Cart Page', async function () {
-                    await inventoryPage.clickCartButton();
-                    const labelDescription = await cartPage.getLabelDescription();
+
+
+                it('Checkout: Overview', async function () {
+                    const paymentInfo = await checkoutOverviewPage.getPaymentInfo();
+                    const shippingInfo = await checkoutOverviewPage.getShippingInfo();
+                    const priceInfo = await checkoutOverviewPage.getPriceInfo();
 
                     assert.strictEqual(
-                        labelDescription.includes('Description'),
+                        paymentInfo.includes('Payment Information:'),
                         true,
-                        'Label Description not Exists'
+                        'Payment Info not Exists'
+                    );
+                    assert.strictEqual(
+                        shippingInfo.includes('Shipping Information:'),
+                        true,
+                        'Shipping Info not Exists'
+                    );
+                    assert.strictEqual(
+                        priceInfo.includes('Price Total'),
+                        true,
+                        'Price Info not Exists'
                     );
                 });
 
-                it('Checkout Product Item', async function () {
-                    await cartPage.clickCheckoutButton();
-                    const checkoutInfo = await checkoutInfoPage.getCheckoutInfo();
+                it('Finishing Checkout', async function () {
+                    await checkoutOverviewPage.clickFinishButton();
+                    const checkoutCompletedTitle = await checkoutCompletePage.getCheckoutComplete();
 
                     assert.strictEqual(
-                        checkoutInfo.includes('Checkout: Your Information'),
+                        checkoutCompletedTitle.includes('Checkout: Complete!'),
                         true,
-                        'Checkout Info not Exists'
+                        'Checkout Complete Title not Exists'
                     );
                 });
 
-
-
-                
-
-
-                
-                
 
             });
         }
@@ -149,4 +168,4 @@ async function cartTest() {
 
 }
 
-cartTest();
+coOverviewTest();
