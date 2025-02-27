@@ -6,6 +6,7 @@ const InventoryPage = require('../pages/inventoryPage');
 const CartPage = require('../pages/cartPage');
 const CheckoutInfoPage = require('../pages/coInfoPage');
 const CheckoutOverviewPage = require('../pages/coOverviewPage');
+const data = require('../fixtures/testData.json');
 
 const chrome = require('selenium-webdriver/chrome');
 // const firefox = require('selenium-webdriver/firefox');
@@ -73,11 +74,11 @@ async function coInformationTest() {
                     checkoutInfoPage = new CheckoutInfoPage(driver);
                     checkoutOverviewPage = new CheckoutOverviewPage(driver);
 
-                    await loginPage.open('https://www.saucedemo.com');
+                    await loginPage.open(data.baseUrl);
                     // Tunggu sampai halaman login siap
                     await loginPage.waitingFieldUsername();
                     //USER SUCCESS LOGIN
-                    await loginPage.login("standard_user", "secret_sauce");
+                    await loginPage.login(data.User.username, data.User.password);
                     // Tunggu sampai login berhasil dan halaman inventory muncul
                     await inventoryPage.waitingAppLogo();
                     await inventoryPage.waitingUrl();
@@ -118,7 +119,7 @@ async function coInformationTest() {
                     if (driver) {
                         await driver.quit();
                     }
-                    console.log(`Add Item to Cart Testing Success! with browser: ${browser.displayName}\n`);
+                    console.log(`${data.log.testCoInformation}${browser.displayName}\n`);
                 });
 
 

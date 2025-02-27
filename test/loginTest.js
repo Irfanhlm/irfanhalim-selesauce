@@ -3,6 +3,7 @@ const assert = require('assert');
 
 const LoginPage = require('../pages/loginPage');
 const InventoryPage = require('../pages/inventoryPage');
+const data = require('../fixtures/testData.json');
 
 const chrome = require('selenium-webdriver/chrome');
 // const firefox = require('selenium-webdriver/firefox');
@@ -63,11 +64,11 @@ async function loginTest() {
                     loginPage = new LoginPage(driver);
                     inventoryPage = new InventoryPage(driver);
 
-                    await loginPage.open('https://www.saucedemo.com');
+                    await loginPage.open(data.baseUrl);
                     // Tunggu sampai halaman login siap
                     await loginPage.waitingFieldUsername();
                     //USER SUCCESS LOGIN
-                    await loginPage.login("standard_user", "secret_sauce");
+                    await loginPage.login(data.User.username, data.User.password);
                     // Tunggu sampai login berhasil dan halaman inventory muncul
                     await inventoryPage.waitingAppLogo();
                     await inventoryPage.waitingUrl();
@@ -101,16 +102,16 @@ async function loginTest() {
                     if (driver) {
                         await driver.quit();
                     }
-                    console.log(`Login Testing Success! with browser: ${browser.displayName}\n`);
+                    console.log(`${data.log.testLogin}${browser.displayName}\n`);
                 });
 
                 it('User Success Login', async function () {
                     const titleText = await inventoryPage.getTitleText();
 
                     assert.strictEqual(
-                        titleText.includes('Swag Labs'),
+                        titleText.includes(data.inventoryPage.assertTitle),
                         true,
-                        'Swag Labs is not contain on page'
+                        data.inventoryPage.errorAssert
                     );
                 });
 

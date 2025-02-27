@@ -1,0 +1,31 @@
+{
+  "baseUrl": "https://www.saucedemo.com",
+  "User": {
+    "username": "standard_user",
+    "password": "secret_sauce"
+  },
+  "invalidUser": {
+    "username": "standard_user",
+    "password": "password"
+  },
+  "messages": {
+    "expectedLoginError": "Username and password do not match",
+    "loginError": "Error Message do not match"
+  },
+  "inventoryPage": {
+    "assertTitle": "Swag Lab",
+    "errorAssert": "Swag Labs is not contain on page"
+  },
+  "log": {
+    "testLogin": "Test LOGIN Success! with browser: ",
+    "testInventory": "Test INVENTORY Success! with browser: ",
+    "testCart": "Test CART Success! with browser: ",
+    "testCoInformation": "Test Checkout INFORMATION Success! with browser: ",
+    "testCoOverview": "Test Checkout OVERVIEW Success! with browser: ",
+    "testCoComplete": "Test Checkout COMPLETE Success! with browser: "
+  }
+
+
+
+
+}
